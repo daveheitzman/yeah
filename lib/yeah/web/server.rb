@@ -72,28 +72,9 @@ class Server
       [200, {'Content-Type' => 'text/html'}, [html]]
     end
 
-    # private
+    private
+    # asset_include_tags and script_include_tag(path) are now included with Yeah::Web::BuildTools
 
-    # def asset_include_tags
-    #   paths = Dir['assets/**/*'].select { |p| File.file? p }
-
-    #   paths.map do |path|
-    #     case path
-    #     when /\.(ogg|wav|mp3)$/
-    #       "<audio src=\"/#{path}\"></audio>"
-    #     when /\.(otf|ttf|woff)$/
-    #       "<style>" +
-    #       "@font-face { font-family: \"#{path[7..-1]}\"; src: url(#{path}) }" +
-    #       "</style>"
-    #     else
-    #       "<img src=\"/#{path}\" />"
-    #     end
-    #   end.join("\n")
-    # end
-
-    # def script_include_tag(path)
-    #   "<script src=\"/assets/#{path}.js\"></script>"
-    # end
   end
 end
 

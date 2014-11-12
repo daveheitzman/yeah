@@ -50,7 +50,6 @@ when 'build'
   Yeah::Web::Builder.new.build
 
 when 'server'
-  
   require 'yeah/web/server'
   port = ARGV.shift || '1234'
   Yeah::Web::Server.new.start(port, {}  ) 
