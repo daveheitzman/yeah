@@ -50,9 +50,10 @@ when 'build'
   Yeah::Web::Builder.new.build
 
 when 'server'
+  
   require 'yeah/web/server'
-  port = ARGV.shift
-  port ? Yeah::Web::Server.new.start(port) : Yeah::Web::Server.new.start
+  port = ARGV.shift || '1234'
+  Yeah::Web::Server.new.start(port, {}  ) 
 
 when 'version'
   require 'yeah/version'

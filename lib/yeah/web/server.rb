@@ -2,6 +2,7 @@ require 'pathname'
 require 'erb'
 require 'rack'
 require 'opal'
+require 'yeah/web/builder'
 
 module Yeah
 module Web
@@ -12,7 +13,7 @@ class Server
   # @param [Integer] port
   # @return [nil]
   # Start web server for game in working directory.
-  def start(port = 1234)
+  def start(port = 1234, opts={})
     Opal::Processor.inline_operators_enabled = true
 
     runner = Runner.new
@@ -57,35 +58,42 @@ class Server
   # `Web::Server`.
   # @see Yeah::Web::Server
   class Runner
+    include Yeah::Web::BuildTools
+
     def call(environment)
       runner_path = Pathname.new(__FILE__).join('..', 'runner.html.erb')
       html = ERB.new(File.read(runner_path)).result(binding)
 
+      # rebuild the game on every page reload 
+      if ENV['YEAH_ENV']=='development'
+        require 'yeah/web/builder'
+        Yeah::Web::Builder.new.build
+      end 
       [200, {'Content-Type' => 'text/html'}, [html]]
     end
 
-    private
+    # private
 
-    def asset_include_tags
-      paths = Dir['assets/**/*'].select { |p| File.file? p }
+    # def asset_include_tags
+    #   paths = Dir['assets/**/*'].select { |p| File.file? p }
 
-      paths.map do |path|
-        case path
-        when /\.(ogg|wav|mp3)$/
-          "<audio src=\"/#{path}\"></audio>"
-        when /\.(otf|ttf|woff)$/
-          "<style>" +
-          "@font-face { font-family: \"#{path[7..-1]}\"; src: url(#{path}) }" +
-          "</style>"
-        else
-          "<img src=\"/#{path}\" />"
-        end
-      end.join("\n")
-    end
+    #   paths.map do |path|
+    #     case path
+    #     when /\.(ogg|wav|mp3)$/
+    #       "<audio src=\"/#{path}\"></audio>"
+    #     when /\.(otf|ttf|woff)$/
+    #       "<style>" +
+    #       "@font-face { font-family: \"#{path[7..-1]}\"; src: url(#{path}) }" +
+    #       "</style>"
+    #     else
+    #       "<img src=\"/#{path}\" />"
+    #     end
+    #   end.join("\n")
+    # end
 
-    def script_include_tag(path)
-      "<script src=\"/assets/#{path}.js\"></script>"
-    end
+    # def script_include_tag(path)
+    #   "<script src=\"/assets/#{path}.js\"></script>"
+    # end
   end
 end
 
